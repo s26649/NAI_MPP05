@@ -2,18 +2,22 @@ import java.util.List;
 import java.util.Random;
 
 public class KMeans {
+
+    // inizjalizuje centroidy poprzez losowe wybranie k punktow z danych
     private static double[][] initializeCentroids(List<Data> data, int k) {
-        Random rand = new Random();
+        Random random = new Random();
+        // wspolrzedne poszczegolnych centroidow
         double[][] centroids = new double[k][data.get(0).getAttributes().length];
         for (int i = 0; i < k; i++) {
-            centroids[i] = data.get(rand.nextInt(data.size())).getAttributes();
+            centroids[i] = data.get(random.nextInt(data.size())).getAttributes();
         }
         return centroids;
     }
 
+    // znajduje najblizszy centroid dla danego punktu (przyjmuje tablice ze wspolrzednymi punktu i tablice ze wspolrzednymi centroidow)
     private static int closestCentroid(double[] dataPoint, double[][] centroids) {
         double minDistance = Double.MAX_VALUE;
-        int cluster = 0;
+        int cluster = 0; // indeks centroidu ktory jest najblizszy danemu punktowi
         for (int i = 0; i < centroids.length; i++) {
             double distance = 0;
             for (int j = 0; j < dataPoint.length; j++) {
@@ -27,9 +31,10 @@ public class KMeans {
         return cluster;
     }
 
+    // oblicza nowe centroidy na podstawie aktualnych przypisan (przyjmuje liste obiektow data, tablice z indeksami klastrow do ktorych sa przypisane poszczegolne punkty i liczbe wymiarow kazdego punktu)
     private static double[][] recalculateCentroids(List<Data> data, int[] assignments, int k, int dimensions) {
         double[][] newCentroids = new double[k][dimensions];
-        int[] counts = new int[k];
+        int[] counts = new int[k]; //  ile punktow zostalo przypisanych do kazdego klastra
         for (int i = 0; i < assignments.length; i++) {
             int cluster = assignments[i];
             counts[cluster]++;
@@ -47,6 +52,7 @@ public class KMeans {
         return newCentroids;
     }
 
+    // oblicza sse (Sum of Squared Errors) dla danych przypisan
     private static double calculateSSE(List<Data> data, int[] assignments, double[][] centroids) {
         double sse = 0;
         for (int i = 0; i < assignments.length; i++) {
@@ -70,13 +76,16 @@ public class KMeans {
             double sse = Double.MAX_VALUE;
 
             for (int iteration = 0; iteration < maxIterations; iteration++) {
+                // przypisanie kazdego punktu do najblizszego klastra
                 for (int i = 0; i < data.size(); i++) {
                     assignments[i] = closestCentroid(data.get(i).getAttributes(), centroids);
                 }
 
+                // przeliczanie centroidow
                 double[][] newCentroids = recalculateCentroids(data, assignments, k, dimensions);
                 double newSSE = calculateSSE(data, assignments, newCentroids);
 
+                // warunek zakonczenia (brak znaczacej zmiany w SSE)
                 if (Math.abs(newSSE - sse) < 0.001) {
                     System.out.printf("\tIteracja %d, E: %f\n", iteration + 1, newSSE);
                     break;
@@ -85,6 +94,7 @@ public class KMeans {
                 sse = newSSE;
                 System.out.printf("\tIteracja %d, E: %f\n", iteration + 1, sse);
             }
+            // aktualizacja najlepszego wyniku SSE
             if (sse < bestSSE) {
                 bestSSE = sse;
             }
