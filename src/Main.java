@@ -13,7 +13,7 @@ public class Main {
 
         try {
             List<Data> dataset = CSVLoader.loadDataFromCsv(testFile);
-            KMeans.runKMeans(dataset, k);
+            KMeans.runKMeans(dataset, k, 5);
         } catch (IOException e) {
             e.printStackTrace();
         }

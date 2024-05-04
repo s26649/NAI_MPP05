@@ -58,31 +58,37 @@ public class KMeans {
         return sse;
     }
 
-    public static void runKMeans(List<Data> data, int k) {
+    public static void runKMeans(List<Data> data, int k, int numberOfTrials) {
         int maxIterations = 100;
         int dimensions = data.get(0).getAttributes().length;
-        double[][] centroids = initializeCentroids(data, k);
-        int[] assignments = new int[data.size()];
-        double[][] newCentroids;
-        double sse;
+        double bestSSE = Double.MAX_VALUE;
 
-        for (int iteration = 0; iteration < maxIterations; iteration++) {
-            // przydzielanie klasterow
-            for (int i = 0; i < data.size(); i++) {
-                assignments[i] = closestCentroid(data.get(i).getAttributes(), centroids);
+        for (int trial = 0; trial < numberOfTrials; trial++) {
+            System.out.println("\nProba " + (trial + 1));
+            double[][] centroids = initializeCentroids(data, k);
+            int[] assignments = new int[data.size()];
+            double sse = Double.MAX_VALUE;
+
+            for (int iteration = 0; iteration < maxIterations; iteration++) {
+                for (int i = 0; i < data.size(); i++) {
+                    assignments[i] = closestCentroid(data.get(i).getAttributes(), centroids);
+                }
+
+                double[][] newCentroids = recalculateCentroids(data, assignments, k, dimensions);
+                double newSSE = calculateSSE(data, assignments, newCentroids);
+
+                if (Math.abs(newSSE - sse) < 0.001) {
+                    System.out.printf("\tIteracja %d, E: %f\n", iteration + 1, newSSE);
+                    break;
+                }
+                centroids = newCentroids;
+                sse = newSSE;
+                System.out.printf("\tIteracja %d, E: %f\n", iteration + 1, sse);
             }
-
-            // obliczanie nowych centroidow
-            newCentroids = recalculateCentroids(data, assignments, k, dimensions);
-
-            // w razie czego
-            if (Math.abs(calculateSSE(data, assignments, newCentroids) - calculateSSE(data, assignments, centroids)) < 0.001) {
-                break;
+            if (sse < bestSSE) {
+                bestSSE = sse;
             }
-
-            centroids = newCentroids;
-            sse = calculateSSE(data, assignments, centroids);
-            System.out.printf("Iteracja %d, Suma kwadratow odleglosci wewnatrz klastrow (E): %f\n", iteration + 1, sse);
         }
+        System.out.println("\nNajlepsze E po wszystkich probach: " + bestSSE);
     }
 }
