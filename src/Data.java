@@ -1,11 +1,11 @@
 public class Data {
-    String[] attributes;
+    Double[] attributes;
 
-    Data(String[] attributes) {
+    Data(Double[] attributes) {
         this.attributes = attributes;
     }
 
-    public String[] getAttributes() {
+    public Double[] getAttributes() {
         return attributes;
     }
 }

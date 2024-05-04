@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CSVLoader {
-    public static List<Data> loadDataFromCsv(String filePath, boolean hasLabel) throws IOException {
+    public static List<Data> loadDataFromCsv(String filePath) throws IOException {
         List<Data> dataList = new ArrayList<>();
         File file = new File(filePath);
 
@@ -18,8 +18,10 @@ public class CSVLoader {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
-                String[] attributes = new String[values.length];
-                System.arraycopy(values, 0, attributes, 0, attributes.length);
+                Double[] attributes = new Double[values.length];
+                for (int i = 0; i < values.length; i++) {
+                    attributes[i] = Double.parseDouble(values[i]);
+                }
                 dataList.add(new Data(attributes));
             }
         }
