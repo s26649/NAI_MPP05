@@ -1,11 +1,11 @@
 public class Data {
-    Double[] attributes;
+    double[] attributes;
 
-    Data(Double[] attributes) {
+    Data(double[] attributes) {
         this.attributes = attributes;
     }
 
-    public Double[] getAttributes() {
+    public double[] getAttributes() {
         return attributes;
     }
 }

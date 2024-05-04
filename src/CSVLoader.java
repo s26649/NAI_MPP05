@@ -18,7 +18,7 @@ public class CSVLoader {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
-                Double[] attributes = new Double[values.length];
+                double[] attributes = new double[values.length];
                 for (int i = 0; i < values.length; i++) {
                     attributes[i] = Double.parseDouble(values[i]);
                 }
