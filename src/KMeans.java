@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -6,13 +7,26 @@ public class KMeans {
     // inizjalizuje centroidy poprzez losowe wybranie k punktow z danych
     private static double[][] initializeCentroids(List<Data> data, int k) {
         Random random = new Random();
-        // wspolrzedne poszczegolnych centroidow
         double[][] centroids = new double[k][data.get(0).getAttributes().length];
-        for (int i = 0; i < k; i++) {
-            centroids[i] = data.get(random.nextInt(data.size())).getAttributes();
+        int centroidsCount = 0;
+
+        while (centroidsCount < k) {
+            double[] candidateCentroid = data.get(random.nextInt(data.size())).getAttributes();
+            boolean isUnique = true;
+            for (int i = 0; i < centroidsCount; i++) {
+                if (Arrays.equals(centroids[i], candidateCentroid)) {
+                    isUnique = false;
+                    break;
+                }
+            }
+            if (isUnique) {
+                centroids[centroidsCount] = candidateCentroid;
+                centroidsCount++;
+            }
         }
         return centroids;
     }
+
 
     // znajduje najblizszy centroid dla danego punktu (przyjmuje tablice ze wspolrzednymi punktu i tablice ze wspolrzednymi centroidow)
     private static int closestCentroid(double[] dataPoint, double[][] centroids) {
@@ -53,7 +67,7 @@ public class KMeans {
     }
 
     // oblicza sse (Sum of Squared Errors) dla danych przypisan
-    private static double calculateSSE(List<Data> data, int[] assignments, double[][] centroids) {
+    private static double calculateE(List<Data> data, int[] assignments, double[][] centroids) {
         double sse = 0;
         for (int i = 0; i < assignments.length; i++) {
             int cluster = assignments[i];
@@ -83,7 +97,7 @@ public class KMeans {
 
                 // przeliczanie centroidow
                 double[][] newCentroids = recalculateCentroids(data, assignments, k, dimensions);
-                double newSSE = calculateSSE(data, assignments, newCentroids);
+                double newSSE = calculateE(data, assignments, newCentroids);
 
                 // warunek zakonczenia (brak znaczacej zmiany w SSE)
                 if (Math.abs(newSSE - sse) < 0.001) {
